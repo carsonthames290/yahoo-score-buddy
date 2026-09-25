@@ -10,33 +10,76 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiPublicYahooCallbackRouteImport } from './routes/api/public/yahoo/callback'
+import { Route as ApiPublicYahooLoginRouteImport } from './routes/api/public/yahoo/login'
+import { Route as ApiPublicYahooLogoutRouteImport } from './routes/api/public/yahoo/logout'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicYahooCallbackRoute = ApiPublicYahooCallbackRouteImport.update({
+  id: '/api/public/yahoo/callback',
+  path: '/api/public/yahoo/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicYahooLoginRoute = ApiPublicYahooLoginRouteImport.update({
+  id: '/api/public/yahoo/login',
+  path: '/api/public/yahoo/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicYahooLogoutRoute = ApiPublicYahooLogoutRouteImport.update({
+  id: '/api/public/yahoo/logout',
+  path: '/api/public/yahoo/logout',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api/public/yahoo/callback': typeof ApiPublicYahooCallbackRoute
+  '/api/public/yahoo/login': typeof ApiPublicYahooLoginRoute
+  '/api/public/yahoo/logout': typeof ApiPublicYahooLogoutRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api/public/yahoo/callback': typeof ApiPublicYahooCallbackRoute
+  '/api/public/yahoo/login': typeof ApiPublicYahooLoginRoute
+  '/api/public/yahoo/logout': typeof ApiPublicYahooLogoutRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/api/public/yahoo/callback': typeof ApiPublicYahooCallbackRoute
+  '/api/public/yahoo/login': typeof ApiPublicYahooLoginRoute
+  '/api/public/yahoo/logout': typeof ApiPublicYahooLogoutRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/api/public/yahoo/callback'
+    | '/api/public/yahoo/login'
+    | '/api/public/yahoo/logout'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/api/public/yahoo/callback'
+    | '/api/public/yahoo/login'
+    | '/api/public/yahoo/logout'
+  id:
+    | '__root__'
+    | '/'
+    | '/api/public/yahoo/callback'
+    | '/api/public/yahoo/login'
+    | '/api/public/yahoo/logout'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApiPublicYahooCallbackRoute: typeof ApiPublicYahooCallbackRoute
+  ApiPublicYahooLoginRoute: typeof ApiPublicYahooLoginRoute
+  ApiPublicYahooLogoutRoute: typeof ApiPublicYahooLogoutRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +91,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/yahoo/callback': {
+      id: '/api/public/yahoo/callback'
+      path: '/api/public/yahoo/callback'
+      fullPath: '/api/public/yahoo/callback'
+      preLoaderRoute: typeof ApiPublicYahooCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/yahoo/login': {
+      id: '/api/public/yahoo/login'
+      path: '/api/public/yahoo/login'
+      fullPath: '/api/public/yahoo/login'
+      preLoaderRoute: typeof ApiPublicYahooLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/yahoo/logout': {
+      id: '/api/public/yahoo/logout'
+      path: '/api/public/yahoo/logout'
+      fullPath: '/api/public/yahoo/logout'
+      preLoaderRoute: typeof ApiPublicYahooLogoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApiPublicYahooCallbackRoute: ApiPublicYahooCallbackRoute,
+  ApiPublicYahooLoginRoute: ApiPublicYahooLoginRoute,
+  ApiPublicYahooLogoutRoute: ApiPublicYahooLogoutRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
