@@ -11,7 +11,12 @@ export type League = {
 
 export type Matchup = {
   week: string;
-  teams: { name: string; logo?: string; points: string; projected?: string }[];
+  teams: {
+    name: string;
+    logo?: string | undefined;
+    points: string;
+    projected?: string | undefined;
+  }[];
 };
 
 export type StandingsRow = {
