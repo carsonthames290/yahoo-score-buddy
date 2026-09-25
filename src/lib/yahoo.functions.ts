@@ -6,7 +6,7 @@ export type League = {
   name: string;
   sport: string;
   season: string;
-  logo?: string;
+  logo?: string | undefined;
 };
 
 export type Matchup = {
@@ -16,7 +16,7 @@ export type Matchup = {
 
 export type StandingsRow = {
   name: string;
-  logo?: string;
+  logo?: string | undefined;
   rank: string;
   record: string;
   pointsFor: string;
