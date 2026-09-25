@@ -23,10 +23,13 @@ export function yahooConfig() {
   return { clientId, clientSecret, appUrl };
 }
 
-export function redirectUri(requestUrl: string) {
-  const { appUrl } = yahooConfig();
-  const origin = appUrl?.replace(/\/$/, "") ?? new URL(requestUrl).origin;
-  return `${origin}/api/public/yahoo/callback`;
+// Yahoo only accepts the exact redirect URI registered in the Yahoo app,
+// so always use the canonical project domain regardless of where we run.
+const CANONICAL_ORIGIN =
+  "https://project--2b30f9c4-1fa0-4c2c-91af-75e4a7225ba6.lovable.app";
+
+export function redirectUri(_requestUrl: string) {
+  return `${CANONICAL_ORIGIN}/api/public/yahoo/callback`;
 }
 
 export function authorizeUrl(clientId: string, uri: string) {
