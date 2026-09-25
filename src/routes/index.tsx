@@ -98,12 +98,6 @@ function Dashboard() {
       <header className="border-b border-border">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4">
           <p className="text-xs font-semibold tracking-[0.3em] text-accent uppercase">Sideline</p>
-          <a
-            href="/api/public/yahoo/logout"
-            className="text-xs text-muted-foreground transition-colors hover:text-foreground"
-          >
-            Sign out
-          </a>
         </div>
       </header>
 
