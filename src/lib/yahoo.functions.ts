@@ -134,6 +134,20 @@ function parseTeam(teamArr: any) {
   return t;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function readPosition(sp: any): string {
+  if (!sp) return "";
+  if (typeof sp === "string") return sp;
+  if (Array.isArray(sp)) {
+    for (const part of sp) {
+      if (part && typeof part === "object" && "position" in part) return String(part.position);
+    }
+    return "";
+  }
+  if (typeof sp === "object" && "position" in sp) return String(sp.position);
+  return "";
+}
+
 export const getScoreboard = createServerFn({ method: "POST" })
   .inputValidator(leagueInput)
   .handler(async ({ data }): Promise<Matchup[]> => {
@@ -212,7 +226,7 @@ export const getRosters = createServerFn({ method: "POST" })
             name: String(pf["name"]?.full ?? "Player"),
             position: String(pf["display_position"] ?? ""),
             team: String(pf["editorial_team_abbr"] ?? ""),
-            slot: String(pf["selected_position"]?.position ?? ""),
+            slot: String(readPosition(pf["selected_position"])),
           };
         });
         return { name: String(f["name"] ?? "Team"), players };
