@@ -34,6 +34,8 @@ export type RosterTeam = {
 
 export type SessionInfo = { signedIn: boolean; configured: boolean };
 
+let ownerCache: { token: string; exp: number } | null = null;
+
 async function withToken<T>(fn: (token: string) => Promise<T>): Promise<T> {
   const {
     parseCookies,
@@ -45,6 +47,21 @@ async function withToken<T>(fn: (token: string) => Promise<T>): Promise<T> {
     COOKIE_EXP,
   } = await import("@/lib/yahoo.server");
   const request = getRequest();
+
+  const ownerRefresh = process.env["YAHOO_REFRESH_TOKEN"];
+  if (ownerRefresh) {
+    if (ownerCache && Date.now() < ownerCache.exp) {
+      try {
+        return await fn(ownerCache.token);
+      } catch (e) {
+        if ((e as Error).message !== "UNAUTHORIZED") throw e;
+      }
+    }
+    const t = await refreshTokens(ownerRefresh, redirectUri(request.url));
+    ownerCache = { token: t.access_token, exp: t.expires_at };
+    return fn(t.access_token);
+  }
+
   const cookies = parseCookies(request.headers.get("cookie"));
   const access = cookies[COOKIE_AT];
   const refresh = cookies[COOKIE_RT];
@@ -70,7 +87,7 @@ export const getSession = createServerFn({ method: "GET" }).handler(
     const cookies = parseCookies(getRequest().headers.get("cookie"));
     const { clientId, clientSecret } = yahooConfig();
     return {
-      signedIn: Boolean(cookies[COOKIE_RT]),
+      signedIn: Boolean(process.env["YAHOO_REFRESH_TOKEN"] || cookies[COOKIE_RT]),
       configured: Boolean(clientId && clientSecret),
     };
   },
