@@ -13,7 +13,10 @@ export const Route = createFileRoute("/api/public/yahoo/callback")({
         try {
           const tokens = await exchangeCode(code, redirectUri(request.url));
           // One-time owner setup: show the refresh token so it can be saved server-side.
-          if (!process.env["YAHOO_REFRESH_TOKEN"]) {
+          // Also shown on demand when the login link carried ?setup=1 (cookie set by login route),
+          // e.g. after rotating Yahoo app credentials.
+          const forceSetup = /(^|;\s*)yahoo_setup=1(;|$)/.test(request.headers.get("cookie") ?? "");
+          if (!process.env["YAHOO_REFRESH_TOKEN"] || forceSetup) {
             const esc = tokens.refresh_token.replace(/[<>&"]/g, "");
             const html = `<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><body style="font-family:system-ui;background:#111;color:#eee;padding:24px;max-width:640px;margin:auto"><h2>Almost done</h2><p>Copy this code and paste it into the secure form in chat:</p><textarea readonly style="width:100%;height:120px;font-family:monospace" onclick="this.select()">${esc}</textarea><p><a href="/" style="color:#7f7">Back to site</a></p></body>`;
             const headers = new Headers({ "content-type": "text/html; charset=utf-8", "cache-control": "no-store" });
