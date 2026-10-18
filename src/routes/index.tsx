@@ -1,9 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { ExternalLink, RefreshCw, Trophy, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getYahooLeague } from "@/lib/yahoo-league.functions";
 import { LEAGUE_URL } from "@/lib/yahoo-league";
+import { LeagueNav } from "@/components/league-nav";
 
 const matchupQuery = queryOptions({
   queryKey: ["yahoo-league", "1285342"],
@@ -40,6 +41,7 @@ function Home() {
         </div>
       </header>
       <div className="mx-auto max-w-5xl px-5 py-10 sm:py-14">
+        <LeagueNav />
         <div className="flex flex-wrap items-end justify-between gap-5">
           <div><p className="mb-2 text-sm text-accent">{scoreboard?.league ?? "cool kid clan"}</p><h1 className="text-3xl font-bold sm:text-4xl">League matchups</h1></div>
           <Button variant="outline" onClick={() => void refetch()} disabled={isFetching}>
@@ -51,7 +53,7 @@ function Home() {
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3"><h2 className="text-sm font-semibold">Week {scoreboard.week}</h2><span className="text-xs text-muted-foreground">{scoreboard.matchups.length} matchups · Yahoo scores</span></div>
           <div className="grid gap-5 lg:grid-cols-2">
             {scoreboard.matchups.map((matchup, i) => <article key={matchup.id} className="overflow-hidden rounded-md border border-border bg-card">
-              <div className="flex items-center justify-between border-b border-border px-5 py-3"><h3 className="text-xs text-muted-foreground">Matchup {i + 1}</h3><Button asChild variant="link" size="sm" className="h-auto p-0"><a href={matchup.url} target="_blank" rel="noopener noreferrer" aria-label={`View matchup ${i + 1} on Yahoo`}>Yahoo <ExternalLink className="size-3" /></a></Button></div>
+              <div className="flex items-center justify-between border-b border-border px-5 py-3"><h3 className="text-xs text-muted-foreground">Matchup {i + 1}</h3><Button asChild variant="link" size="sm" className="h-auto p-0"><Link to="/matchups/$id" params={{ id: matchup.id }} aria-label={`View matchup ${i + 1} players`}>View players <ExternalLink className="size-3" /></Link></Button></div>
               <div className="divide-y divide-border px-5">
                 {matchup.teams.map((team) => <div key={team.name} className="flex min-h-28 items-center justify-between gap-4 py-6">
                   <h4 className="min-w-0 break-words text-lg font-semibold">{team.name}</h4>

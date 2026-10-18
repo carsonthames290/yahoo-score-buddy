@@ -11,3 +11,4 @@
 
 - Keep the public Yahoo league source and parsing in a client-safe module, with upstream fetching in a server function; this keeps source validation testable and avoids browser cross-origin requests.
 - Display only matchups and scores explicitly returned by the Yahoo league page, including its week and check timestamp; inaccessible or unrecognized responses must show an unavailable state, never fabricated scores.
+- League content uses separate matchup-detail, standings, and activity routes with shared navigation; parse player fantasy-point columns separately from projections and preserve unplayed values as returned by Yahoo.
