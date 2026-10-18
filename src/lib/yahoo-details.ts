@@ -45,3 +45,26 @@ export function parseMatchupDetail(html: string, week: number, checkedAt: string
   if (teams.some((team) => !team.starters.length)) return null;
   return { week, checkedAt, teams };
 }
+// Yahoo's public matchup page no longer includes lineups; each team page does.
+export function parseTeamLineup(html: string, week: number): { name: string; starters: Player[]; bench: Player[] } | null {
+  const root = parse(html);
+  if (text(root.querySelector("select option[selected]")).replace(/:.*/, "") !== `Week ${week}`) return null;
+  const name = text(root.querySelector("title")).split(" | ")[0]?.split(" - ").slice(1).join(" - ").trim();
+  if (!name) return null;
+  const starters: Player[] = [], bench: Player[] = [];
+  for (const table of root.querySelectorAll("table[id^=statTable]")) {
+    const headers = table.querySelectorAll("thead tr").at(-1)?.querySelectorAll("th").map((h) => text(h)) ?? [];
+    if (headers[4] !== "Fan Pts" || headers[5] !== "Proj Pts") return null;
+    for (const row of table.querySelectorAll("tbody tr")) {
+      const cells = row.querySelectorAll("td");
+      const cell = row.querySelector("td.player");
+      const player = text(cell?.querySelector("a.name"));
+      if (!cell || !player) continue;
+      const points = text(cells[5]);
+      if (!/^(?:-?\d+(?:\.\d+)?|–|—|-|Bye)$/u.test(points)) return null;
+      const slot = text(cells[0]);
+      (slot === "BN" || slot === "IR" ? bench : starters).push({ name: player, slot, points, projected: text(cells[6]).split(" ")[0] ?? "", position: text(cell.querySelector(".ysf-player-name .D-b")), game: text(cell.querySelector(".ysf-game-status")).replace(/[\uE000-\uF8FF]/g, "").trim(), status: text(cell.querySelector(".ysf-player-status")), stats: "" });
+    }
+  }
+  return starters.length ? { name, starters, bench } : null;
+}

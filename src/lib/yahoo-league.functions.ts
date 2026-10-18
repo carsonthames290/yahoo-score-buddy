@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { setResponseHeader } from "@tanstack/react-start/server";
 import { LEAGUE_URL, parseYahooLeague, type LeagueScoreboard } from "./yahoo-league";
-import { parseLeagueExtras, parseMatchupDetail, type LeagueExtras } from "./yahoo-details";
+import { parseLeagueExtras, parseMatchupDetail, parseTeamLineup, type LeagueExtras, type MatchupDetail } from "./yahoo-details";
 import { z } from "zod";
 
 type Result = { scoreboard: LeagueScoreboard | null; checkedAt: string; error: string | null; extras?: LeagueExtras };
@@ -47,9 +47,22 @@ export const getYahooMatchup = createServerFn({ method: "GET" })
     const checkedAt = new Date().toISOString();
     const [week, home, away] = data.id.split("-");
     const url = `${LEAGUE_URL}/matchup?week=${week}&mid1=${home}&mid2=${away}`;
+    const get = async (u: string) => {
+      const r = await fetch(u, { headers: YAHOO_FETCH_HEADERS, cache: "no-store", redirect: "follow", signal: AbortSignal.timeout(12_000) });
+      if (!r.ok) console.error(`Yahoo fetch failed: HTTP ${r.status} ${u}`);
+      return r.ok ? r.text() : "";
+    };
     try {
-      const response = await fetch(url, { headers: YAHOO_FETCH_HEADERS, cache: "no-store", redirect: "follow", signal: AbortSignal.timeout(12_000) });
-      const matchup = response.ok ? parseMatchupDetail(await response.text(), Number(week), checkedAt) : null;
+      const [leagueHtml, homeHtml, awayHtml] = await Promise.all([get(LEAGUE_URL), get(`${LEAGUE_URL}/${home}?week=${week}`), get(`${LEAGUE_URL}/${away}?week=${week}`)]);
+      const lineups = [parseTeamLineup(homeHtml, Number(week)), parseTeamLineup(awayHtml, Number(week))];
+      // Team totals come only from Yahoo's own scoreboard, never summed here.
+      const totals = parseYahooLeague(leagueHtml, checkedAt)?.matchups.find((m) => m.id === data.id)?.teams;
+      let matchup: MatchupDetail | null = null;
+      if (lineups[0] && lineups[1]) {
+        matchup = { week: Number(week), checkedAt, teams: lineups.map((l, i) => ({ ...l!, points: totals?.[i]?.points ?? "" })) };
+      } else {
+        matchup = parseMatchupDetail(await get(url), Number(week), checkedAt);
+      }
       return { matchup, url, error: matchup ? null : "Yahoo isn't providing this matchup's player scores right now." };
     } catch (cause) {
       console.error("Yahoo matchup fetch threw:", cause);
