@@ -9,5 +9,5 @@
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
 
-- Keep the public shared-matchup source and parsing in a client-safe module, with upstream fetching in a server function; this keeps source validation testable and avoids browser cross-origin requests.
-- Show only scores actually returned by the public shared page, with its explicit week and a check timestamp; the share contract does not guarantee automatic week rollover or real-time updates.
+- Keep the public Yahoo league source and parsing in a client-safe module, with upstream fetching in a server function; this keeps source validation testable and avoids browser cross-origin requests.
+- Display only matchups and scores explicitly returned by the Yahoo league page, including its week and check timestamp; inaccessible or unrecognized responses must show an unavailable state, never fabricated scores.
