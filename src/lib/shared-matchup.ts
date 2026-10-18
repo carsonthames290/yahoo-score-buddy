@@ -15,9 +15,11 @@ function meta(html: string, key: string) {
   for (const tag of html.match(/<meta\b[^>]*>/gi) ?? []) {
     const attrs: Record<string, string> = {};
     for (const match of tag.matchAll(/([\w:-]+)\s*=\s*(["'])(.*?)\2/gs)) {
-      attrs[match[1].toLowerCase()] = decode(match[3]);
+      const key = match[1];
+      const value = match[3];
+      if (key !== undefined && value !== undefined) attrs[key.toLowerCase()] = decode(value);
     }
-    if (attrs.property === key || attrs.name === key) return attrs.content ?? "";
+    if (attrs['property'] === key || attrs['name'] === key) return attrs['content'] ?? "";
   }
   return "";
 }
@@ -26,12 +28,14 @@ export function parseSharedMatchup(html: string, checkedAt: string): SharedMatch
   const title = meta(html, "og:title");
   const match = title.match(/^(.+?)\s+(-?\d+(?:\.\d+)?)\s+[–—-]\s+(.+?)\s+(-?\d+(?:\.\d+)?)\s+·\s+Week\s+(\d+)\s*\|\s*My Fantasy Scores$/);
   if (!match) return null;
+  const [, homeName, homePoints, awayName, awayPoints, week] = match;
+  if (homeName === undefined || homePoints === undefined || awayName === undefined || awayPoints === undefined || week === undefined) return null;
   const description = meta(html, "og:description");
   const league = description.match(/^[^·]+·\s*(.+?)\.\s*See the matchup/)?.[1] ?? "Shared league";
   return {
     league,
-    week: Number(match[5]),
-    teams: [{ name: match[1], points: match[2] }, { name: match[3], points: match[4] }],
+    week: Number(week),
+    teams: [{ name: homeName, points: homePoints }, { name: awayName, points: awayPoints }],
     checkedAt,
   };
 }
