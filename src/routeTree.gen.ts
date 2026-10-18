@@ -10,6 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ActivityRouteImport } from './routes/activity'
+import { Route as StandingsRouteImport } from './routes/standings'
+import { Route as MatchupsIdRouteImport } from './routes/matchups.$id'
 import { Route as ApiPublicYahooCallbackRouteImport } from './routes/api/public/yahoo/callback'
 import { Route as ApiPublicYahooLoginRouteImport } from './routes/api/public/yahoo/login'
 import { Route as ApiPublicYahooLogoutRouteImport } from './routes/api/public/yahoo/logout'
@@ -17,6 +20,21 @@ import { Route as ApiPublicYahooLogoutRouteImport } from './routes/api/public/ya
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ActivityRoute = ActivityRouteImport.update({
+  id: '/activity',
+  path: '/activity',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StandingsRoute = StandingsRouteImport.update({
+  id: '/standings',
+  path: '/standings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MatchupsIdRoute = MatchupsIdRouteImport.update({
+  id: '/matchups/$id',
+  path: '/matchups/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicYahooCallbackRoute = ApiPublicYahooCallbackRouteImport.update({
@@ -37,12 +55,18 @@ const ApiPublicYahooLogoutRoute = ApiPublicYahooLogoutRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/activity': typeof ActivityRoute
+  '/standings': typeof StandingsRoute
+  '/matchups/$id': typeof MatchupsIdRoute
   '/api/public/yahoo/callback': typeof ApiPublicYahooCallbackRoute
   '/api/public/yahoo/login': typeof ApiPublicYahooLoginRoute
   '/api/public/yahoo/logout': typeof ApiPublicYahooLogoutRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/activity': typeof ActivityRoute
+  '/standings': typeof StandingsRoute
+  '/matchups/$id': typeof MatchupsIdRoute
   '/api/public/yahoo/callback': typeof ApiPublicYahooCallbackRoute
   '/api/public/yahoo/login': typeof ApiPublicYahooLoginRoute
   '/api/public/yahoo/logout': typeof ApiPublicYahooLogoutRoute
@@ -50,6 +74,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/activity': typeof ActivityRoute
+  '/standings': typeof StandingsRoute
+  '/matchups/$id': typeof MatchupsIdRoute
   '/api/public/yahoo/callback': typeof ApiPublicYahooCallbackRoute
   '/api/public/yahoo/login': typeof ApiPublicYahooLoginRoute
   '/api/public/yahoo/logout': typeof ApiPublicYahooLogoutRoute
@@ -58,18 +85,27 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/activity'
+    | '/standings'
+    | '/matchups/$id'
     | '/api/public/yahoo/callback'
     | '/api/public/yahoo/login'
     | '/api/public/yahoo/logout'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/activity'
+    | '/standings'
+    | '/matchups/$id'
     | '/api/public/yahoo/callback'
     | '/api/public/yahoo/login'
     | '/api/public/yahoo/logout'
   id:
     | '__root__'
     | '/'
+    | '/activity'
+    | '/standings'
+    | '/matchups/$id'
     | '/api/public/yahoo/callback'
     | '/api/public/yahoo/login'
     | '/api/public/yahoo/logout'
@@ -77,6 +113,9 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ActivityRoute: typeof ActivityRoute
+  StandingsRoute: typeof StandingsRoute
+  MatchupsIdRoute: typeof MatchupsIdRoute
   ApiPublicYahooCallbackRoute: typeof ApiPublicYahooCallbackRoute
   ApiPublicYahooLoginRoute: typeof ApiPublicYahooLoginRoute
   ApiPublicYahooLogoutRoute: typeof ApiPublicYahooLogoutRoute
@@ -89,6 +128,27 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/activity': {
+      id: '/activity'
+      path: '/activity'
+      fullPath: '/activity'
+      preLoaderRoute: typeof ActivityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/standings': {
+      id: '/standings'
+      path: '/standings'
+      fullPath: '/standings'
+      preLoaderRoute: typeof StandingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/matchups/$id': {
+      id: '/matchups/$id'
+      path: '/matchups/$id'
+      fullPath: '/matchups/$id'
+      preLoaderRoute: typeof MatchupsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/yahoo/callback': {
@@ -117,6 +177,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ActivityRoute: ActivityRoute,
+  StandingsRoute: StandingsRoute,
+  MatchupsIdRoute: MatchupsIdRoute,
   ApiPublicYahooCallbackRoute: ApiPublicYahooCallbackRoute,
   ApiPublicYahooLoginRoute: ApiPublicYahooLoginRoute,
   ApiPublicYahooLogoutRoute: ApiPublicYahooLogoutRoute,
