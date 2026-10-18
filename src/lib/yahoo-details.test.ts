@@ -1,7 +1,7 @@
 import { describe, test } from "node:test";
 import { strictEqual, deepStrictEqual } from "node:assert";
 import { readFileSync } from "node:fs";
-import { parseLeagueExtras, parseMatchupDetail } from "./yahoo-details";
+import { parseLeagueExtras, parseMatchupDetail, parseTeamLineup } from "./yahoo-details";
 
 const players = readFileSync(new URL("./fixtures/yahoo-players.html", import.meta.url), "utf8");
 const extras = readFileSync(new URL("./fixtures/yahoo-extras.html", import.meta.url), "utf8");
@@ -28,5 +28,12 @@ describe("Yahoo player and league details", () => {
     const moves = parseLeagueExtras(extras).transactions;
     strictEqual(moves.length, 5);
     deepStrictEqual(moves[0]?.moves, [{ player: "Brock Purdy", action: "Waiver", position: "SF - QB" }, { player: "Jared Goff", action: "To Waivers", position: "Det - QB" }]);
+  });
+  test("reads a team page lineup with actual points and projections", () => {
+    const team = parseTeamLineup(readFileSync(new URL("./fixtures/yahoo-team.html", import.meta.url), "utf8"), 6);
+    strictEqual(team?.name, "Water Crew Carson");
+    strictEqual(team?.starters.find((p) => p.name === "Josh Allen")?.points, "–");
+    strictEqual(team?.starters.find((p) => p.name === "Chuba Hubbard")?.points, "1.50");
+    strictEqual(team?.starters.find((p) => p.name === "Chuba Hubbard")?.projected, "14.69");
   });
 });
