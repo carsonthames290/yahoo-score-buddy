@@ -54,6 +54,7 @@ export const getYahooMatchup = createServerFn({ method: "GET" })
     };
     try {
       const [leagueHtml, homeHtml, awayHtml] = await Promise.all([get(LEAGUE_URL), get(`${LEAGUE_URL}/${home}?week=${week}`), get(`${LEAGUE_URL}/${away}?week=${week}`)]);
+      console.error("DBG", homeHtml.length, awayHtml.length);
       const lineups = [parseTeamLineup(homeHtml, Number(week)), parseTeamLineup(awayHtml, Number(week))];
       // Team totals come only from Yahoo's own scoreboard, never summed here.
       const totals = parseYahooLeague(leagueHtml, checkedAt)?.matchups.find((m) => m.id === data.id)?.teams;
