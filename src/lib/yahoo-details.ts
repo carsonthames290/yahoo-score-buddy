@@ -61,7 +61,7 @@ export function parseTeamLineup(html: string, week: number): { name: string; sta
       const player = text(cell?.querySelector("a.name"));
       if (!cell || !player) continue;
       const points = text(cells[5]);
-      if (!/^(?:-?\d+(?:\.\d+)?|–|—|-)$/u.test(points)) return null;
+      if (!/^(?:-?\d+(?:\.\d+)?|–|—|-|Bye)$/u.test(points)) return null;
       const slot = text(cells[0]);
       (slot === "BN" || slot === "IR" ? bench : starters).push({ name: player, slot, points, projected: text(cells[6]).split(" ")[0] ?? "", position: text(cell.querySelector(".ysf-player-name .D-b")), game: text(cell.querySelector(".ysf-game-status")).replace(/[\uE000-\uF8FF]/g, "").trim(), status: text(cell.querySelector(".ysf-player-status")), stats: "" });
     }
